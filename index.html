@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verificar Localização</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: 'Rubik', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .card {
+      background: #1e293b;
+      padding: 20px 30px;
+      border-radius: 14px;
+      box-shadow: 0 0 10px #00000050;
+      text-align: center;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+    .green { color: #22c55e; }
+    .red { color: #ef4444; }
+    .yellow { color: #facc15; }
+    .gray { color: #9ca3af; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2><i data-lucide="map-pin"></i> Status da Localização</h2>
+    <div id="status" class="status gray">
+      <i data-lucide="loader"></i> Verificando localização...
+    </div>
+  </div>
+
+  <script>
+    // Inicializa os ícones Lucide
+    lucide.createIcons();
+
+    const allowedLatitude = -15.7895;
+    const allowedLongitude = -47.9257;
+    const allowedRadius = 0.2; // em km
+    const statusDiv = document.getElementById("status");
+
+    if (!navigator.geolocation) {
+      statusDiv.innerHTML = `<i data-lucide="x-circle"></i> Seu navegador não suporta geolocalização`;
+      statusDiv.className = "status gray";
+      lucide.createIcons();
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const distance = getDistance(latitude, longitude, allowedLatitude, allowedLongitude);
+
+          if (distance <= allowedRadius) {
+            statusDiv.innerHTML = `<i data-lucide="check-circle"></i> Você está no local permitido ✅`;
+            statusDiv.className = "status green";
+          } else {
+            statusDiv.innerHTML = `<i data-lucide="x-circle"></i> Você não está no local ❌`;
+            statusDiv.className = "status red";
+          }
+          lucide.createIcons();
+        },
+        (error) => {
+          statusDiv.innerHTML = `<i data-lucide="x-circle"></i> Erro ao obter localização`;
+          statusDiv.className = "status red";
+          lucide.createIcons();
+          console.error(error);
+        }
+      );
+    }
+
+    function getDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = deg2rad(lat2 - lat1);
+      const dLon = deg2rad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(deg2rad(lat1)) *
+          Math.cos(deg2rad(lat2)) *
+          Math.sin(dLon / 2) ** 2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function deg2rad(deg) {
+      return deg * (Math.PI / 180);
+    }
+  </script>
+</body>
+</html>
