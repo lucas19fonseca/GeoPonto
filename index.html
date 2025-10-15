@@ -172,98 +172,6 @@
             transform: none !important;
         }
         
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: #1f1f2e;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 400px;
-            width: 100%;
-            border: 1px solid #2a2a3e;
-        }
-        
-        .modal-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #f0f0f3;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #a1a1aa;
-            font-weight: 500;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #3a3a4e;
-            border-radius: 10px;
-            background: #2a2a3e;
-            color: #e4e4e7;
-            font-family: 'Rubik', sans-serif;
-            font-size: 16px;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #6366f1;
-        }
-        
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 25px;
-        }
-        
-        .btn-row .btn {
-            flex: 1;
-            margin-bottom: 0;
-        }
-        
-        .action-btn {
-            background: none;
-            border: none;
-            color: #a1a1aa;
-            cursor: pointer;
-            padding: 4px 8px;
-            font-size: 18px;
-            transition: all 0.2s;
-        }
-        
-        .action-btn:hover {
-            color: #6366f1;
-            transform: scale(1.1);
-        }
-        
-        .action-btn.delete:hover {
-            color: #ef4444;
-        }
-        
         table {
             width: 100%;
             border-collapse: collapse;
@@ -412,10 +320,6 @@
             Registrar Saída Manual
         </button>
         
-        <button id="addRecordBtn" class="btn btn-primary">
-            ➕ Adicionar Registro Manual
-        </button>
-        
         <h2 class="section-title">Histórico de Registros</h2>
         
         <div class="table-container">
@@ -425,36 +329,16 @@
                         <th><span class="icon">📅</span>Data</th>
                         <th><span class="icon">⏰</span>Horas Extras do Dia</th>
                         <th><span class="icon">🧮</span>Total Acumulado</th>
-                        <th style="width: 80px;">Ações</th>
                     </tr>
                 </thead>
                 <tbody id="recordsTable">
                     <tr>
-                        <td colspan="4" style="text-align: center; color: #a1a1aa;">
+                        <td colspan="3" style="text-align: center; color: #a1a1aa;">
                             Nenhum registro ainda
                         </td>
                     </tr>
                 </tbody>
             </table>
-        </div>
-    </div>
-    
-    <!-- Modal para Editar/Adicionar Registro -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <div class="modal-title" id="modalTitle">Editar Registro</div>
-            <div class="form-group">
-                <label class="form-label">Data</label>
-                <input type="date" id="editDate" class="form-input">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Horas Extras (HH:MM)</label>
-                <input type="time" id="editOvertime" class="form-input">
-            </div>
-            <div class="btn-row">
-                <button id="cancelBtn" class="btn btn-secondary">Cancelar</button>
-                <button id="saveBtn" class="btn btn-primary">Salvar</button>
-            </div>
         </div>
     </div>
 
@@ -493,15 +377,6 @@
         const requestPermission = document.getElementById('requestPermission');
         const manualCheckIn = document.getElementById('manualCheckIn');
         const manualCheckOut = document.getElementById('manualCheckOut');
-        const addRecordBtn = document.getElementById('addRecordBtn');
-        const editModal = document.getElementById('editModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const editDate = document.getElementById('editDate');
-        const editOvertime = document.getElementById('editOvertime');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const saveBtn = document.getElementById('saveBtn');
-        
-        let editingIndex = -1;
         
         // Funções de armazenamento (simulado para ambiente Claude.ai)
         const storage = {
@@ -684,7 +559,7 @@
             if (records.length === 0) {
                 recordsTable.innerHTML = `
                     <tr>
-                        <td colspan="4" style="text-align: center; color: #a1a1aa;">
+                        <td colspan="3" style="text-align: center; color: #a1a1aa;">
                             Nenhum registro ainda
                         </td>
                     </tr>
@@ -694,7 +569,7 @@
             
             let accumulatedTotal = 0;
             
-            recordsTable.innerHTML = records.map((record, index) => {
+            recordsTable.innerHTML = records.map(record => {
                 accumulatedTotal += record.overtime;
                 const totalDisplay = accumulatedTotal > 0 ? formatTimeShort(accumulatedTotal) : '—';
                 
@@ -703,10 +578,6 @@
                         <td class="date-cell">${formatRelativeDate(record.date)}</td>
                         <td class="overtime-cell">${formatTimeShort(record.overtime)}</td>
                         <td class="total-cell">${totalDisplay}</td>
-                        <td>
-                            <button class="action-btn" onclick="editRecord(${index})" title="Editar">✏️</button>
-                            <button class="action-btn delete" onclick="deleteRecord(${index})" title="Deletar">🗑️</button>
-                        </td>
                     </tr>
                 `;
             }).reverse().join('');
