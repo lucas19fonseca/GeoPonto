@@ -176,22 +176,49 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            font-size: 14px;
+            font-size: 15px;
         }
         
         th {
             background: #2a2a3e;
-            padding: 12px 8px;
+            padding: 16px 12px;
             text-align: left;
             font-weight: 500;
             color: #f0f0f3;
             border-bottom: 2px solid #3a3a4e;
+            font-size: 14px;
+        }
+        
+        th .icon {
+            margin-right: 8px;
+            font-size: 18px;
         }
         
         td {
-            padding: 12px 8px;
+            padding: 18px 12px;
             border-bottom: 1px solid #2a2a3e;
             color: #e4e4e7;
+            font-size: 16px;
+        }
+        
+        td.date-cell {
+            color: #a1a1aa;
+        }
+        
+        td.overtime-cell {
+            font-weight: 500;
+            color: #818cf8;
+            font-size: 18px;
+        }
+        
+        td.total-cell {
+            font-weight: 600;
+            color: #34d399;
+            font-size: 18px;
+        }
+        
+        td.empty-cell {
+            color: #52525b;
         }
         
         tr:last-child td {
@@ -273,9 +300,16 @@
             <div class="timer-display" id="timer">00:00:00</div>
         </div>
         
-        <div class="summary-card">
-            <div class="summary-title">Total de Horas Extras Acumuladas</div>
+        <div class="summary-card" id="summaryCard">
+            <div class="summary-title">Horas Extras Acumuladas</div>
             <div class="summary-value" id="totalOvertime">00:00</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="goal-info">
+                <span id="goalStatus">Meta: 20:00 horas</span>
+                <span id="remainingHours">Faltam: 20:00</span>
+            </div>
         </div>
         
         <button id="manualCheckIn" class="btn btn-secondary">
@@ -292,16 +326,14 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Data</th>
-                        <th>Entrada</th>
-                        <th>Saída</th>
-                        <th>Total</th>
-                        <th>Extras</th>
+                        <th><span class="icon">📅</span>Data</th>
+                        <th><span class="icon">⏰</span>Horas Extras do Dia</th>
+                        <th><span class="icon">🧮</span>Total Acumulado</th>
                     </tr>
                 </thead>
                 <tbody id="recordsTable">
                     <tr>
-                        <td colspan="5" style="text-align: center; color: #a1a1aa;">
+                        <td colspan="3" style="text-align: center; color: #a1a1aa;">
                             Nenhum registro ainda
                         </td>
                     </tr>
@@ -320,6 +352,7 @@
         
         const WORK_HOURS_PER_DAY = 8 * 60; // 8 horas em minutos
         const MAX_OVERTIME_PER_DAY = 60; // 1 hora em minutos
+        const OVERTIME_GOAL = 20 * 60; // Meta: 20 horas em minutos
         
         // Estado da aplicação
         let currentSession = null;
@@ -334,6 +367,10 @@
         const statusDetail = document.getElementById('statusDetail');
         const timer = document.getElementById('timer');
         const totalOvertime = document.getElementById('totalOvertime');
+        const progressFill = document.getElementById('progressFill');
+        const goalStatus = document.getElementById('goalStatus');
+        const remainingHours = document.getElementById('remainingHours');
+        const summaryCard = document.getElementById('summaryCard');
         const recordsTable = document.getElementById('recordsTable');
         const permissionAlert = document.getElementById('permissionAlert');
         const locationAlert = document.getElementById('locationAlert');
@@ -503,12 +540,26 @@
             console.log('Sessão finalizada:', record);
         }
         
+        // Formatar data relativa
+        function formatRelativeDate(dateString) {
+            const today = new Date().toLocaleDateString('pt-BR');
+            const yesterday = new Date(Date.now() - 86400000).toLocaleDateString('pt-BR');
+            
+            if (dateString === today) {
+                return '(Hoje)';
+            } else if (dateString === yesterday) {
+                return '(Ontem)';
+            } else {
+                return dateString;
+            }
+        }
+        
         // Atualizar tabela de registros
         function updateRecordsTable() {
             if (records.length === 0) {
                 recordsTable.innerHTML = `
                     <tr>
-                        <td colspan="5" style="text-align: center; color: #a1a1aa;">
+                        <td colspan="3" style="text-align: center; color: #a1a1aa;">
                             Nenhum registro ainda
                         </td>
                     </tr>
@@ -516,21 +567,44 @@
                 return;
             }
             
-            recordsTable.innerHTML = records.map(record => `
-                <tr>
-                    <td>${record.date}</td>
-                    <td>${record.checkIn}</td>
-                    <td>${record.checkOut}</td>
-                    <td>${formatTimeShort(record.totalMinutes)}</td>
-                    <td><strong>${formatTimeShort(record.overtime)}</strong></td>
-                </tr>
-            `).reverse().join('');
+            let accumulatedTotal = 0;
+            
+            recordsTable.innerHTML = records.map(record => {
+                accumulatedTotal += record.overtime;
+                const totalDisplay = accumulatedTotal > 0 ? formatTimeShort(accumulatedTotal) : '—';
+                
+                return `
+                    <tr>
+                        <td class="date-cell">${formatRelativeDate(record.date)}</td>
+                        <td class="overtime-cell">${formatTimeShort(record.overtime)}</td>
+                        <td class="total-cell">${totalDisplay}</td>
+                    </tr>
+                `;
+            }).reverse().join('');
         }
         
         // Atualizar total de horas extras
         function updateTotalOvertime() {
             const total = records.reduce((sum, record) => sum + record.overtime, 0);
             totalOvertime.textContent = formatTimeShort(total);
+            
+            // Calcular progresso em relação à meta
+            const progress = Math.min((total / OVERTIME_GOAL) * 100, 100);
+            progressFill.style.width = progress + '%';
+            
+            // Calcular horas restantes
+            const remaining = Math.max(OVERTIME_GOAL - total, 0);
+            remainingHours.textContent = `Faltam: ${formatTimeShort(remaining)}`;
+            
+            // Verificar se atingiu a meta
+            if (total >= OVERTIME_GOAL) {
+                summaryCard.classList.add('complete');
+                goalStatus.textContent = '✓ Meta Atingida!';
+                remainingHours.textContent = 'Parabéns! 🎉';
+            } else {
+                summaryCard.classList.remove('complete');
+                goalStatus.textContent = 'Meta: 20:00 horas';
+            }
         }
         
         // Callback de sucesso da geolocalização
@@ -604,6 +678,36 @@
         function init() {
             // Carregar dados salvos
             records = storage.getRecords();
+            
+            // Adicionar registros iniciais se não houver nenhum
+            if (records.length === 0) {
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const dayBefore = new Date(today);
+                dayBefore.setDate(dayBefore.getDate() - 2);
+                
+                // Registro de ontem: 1h00 de extras
+                records.push({
+                    date: dayBefore.toLocaleDateString('pt-BR'),
+                    checkIn: '08:00',
+                    checkOut: '18:00',
+                    totalMinutes: 600, // 10 horas
+                    overtime: 60 // 1 hora extra
+                });
+                
+                // Registro de hoje: 1h30 de extras
+                records.push({
+                    date: yesterday.toLocaleDateString('pt-BR'),
+                    checkIn: '08:00',
+                    checkOut: '18:30',
+                    totalMinutes: 630, // 10h30
+                    overtime: 90 // 1h30 extras
+                });
+                
+                storage.saveRecords(records);
+            }
+            
             currentSession = storage.getCurrentSession();
             
             updateRecordsTable();
