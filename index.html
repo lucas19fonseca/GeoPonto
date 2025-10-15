@@ -1,103 +1,642 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Verificar Localização</title>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    body {
-      background: #0f172a;
-      color: white;
-      font-family: 'Rubik', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    .card {
-      background: #1e293b;
-      padding: 20px 30px;
-      border-radius: 14px;
-      box-shadow: 0 0 10px #00000050;
-      text-align: center;
-    }
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 10px;
-      font-size: 1.1rem;
-    }
-    .green { color: #22c55e; }
-    .red { color: #ef4444; }
-    .yellow { color: #facc15; }
-    .gray { color: #9ca3af; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>Registro de Horas Extras</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlJlZ2lzdHJvIGRlIEhvcmFzIEV4dHJhcyIsCiAgInNob3J0X25hbWUiOiAiSG9yYXMgRXh0cmFzIiwKICAic3RhcnRfdXJsIjogIi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmZmZmZmYiLAogICJ0aGVtZV9jb2xvciI6ICIjMmMzZTUwIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ3JlY3Qgd2lkdGg9JzEwMCcgaGVpZ2h0PScxMDAnIGZpbGw9JyUyMzJjM2U1MCcvJTNFJTNDdGV4dCB4PSc1MCUyNScgeT0nNTAlMjUnIGZvbnQtc2l6ZT0nNTAnIGZpbGw9JyUyM2ZmZicgZm9udC1mYW1pbHk9J0FyaWFsJyUzRUglM0MvdGV4dCUzRSUzQy9zdmclM0UiLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9LAogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTAwIDEwMCclM0UlM0NyZWN0IHdpZHRoPScxMDAnIGhlaWdodD0nMTAwJyBmaWxsPSclMjMyYzNlNTAnLyUzRSUzQ3RleHQgeD0nNTAlMjUnIHk9JzUwJTI1JyBmb250LXNpemU9JzUwJyBmaWxsPSclMjNmZmYnIGZvbnQtZmFtaWx5PSdBcmlhbCclM0VIJTNDL3RleHQlM0UlM0Mvc3ZnJTNFIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e4e4e7;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1f1f2e;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            padding: 30px;
+            border: 1px solid #2a2a3e;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #f0f0f3;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #a1a1aa;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        
+        .status-card {
+            background: #2a2a3e;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 1px solid #3a3a4e;
+        }
+        
+        .status-indicator {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .status-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: #f0f0f3;
+            margin-bottom: 5px;
+        }
+        
+        .status-detail {
+            font-size: 14px;
+            color: #a1a1aa;
+            font-weight: 300;
+        }
+        
+        .timer-display {
+            font-size: 48px;
+            font-weight: 600;
+            color: #818cf8;
+            margin: 15px 0;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: white;
+            border: 1px solid #6d28d9;
+        }
+        
+        .summary-title {
+            font-size: 14px;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .summary-value {
+            font-size: 36px;
+            font-weight: 600;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Rubik', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99,102,241,0.4);
+        }
+        
+        .btn-secondary {
+            background: #2a2a3e;
+            color: #e4e4e7;
+            border: 1px solid #3a3a4e;
+        }
+        
+        .btn-secondary:hover {
+            background: #3a3a4e;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        th {
+            background: #2a2a3e;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 500;
+            color: #f0f0f3;
+            border-bottom: 2px solid #3a3a4e;
+        }
+        
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #2a2a3e;
+            color: #e4e4e7;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 30px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 30px 0 15px 0;
+            color: #f0f0f3;
+        }
+        
+        .alert {
+            background: #422006;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #fef3c7;
+        }
+        
+        .permission-needed {
+            background: #450a0a;
+            border-left: 4px solid #dc2626;
+            color: #fecaca;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .timer-display {
+                font-size: 36px;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <h2><i data-lucide="map-pin"></i> Status da Localização</h2>
-    <div id="status" class="status gray">
-      <i data-lucide="loader"></i> Verificando localização...
+    <div class="container">
+        <h1>Registro de Horas Extras</h1>
+        <p class="subtitle">Monitoramento automático de presença</p>
+        
+        <div id="permissionAlert" class="alert permission-needed" style="display: none;">
+            <strong>Permissão necessária:</strong> Clique no botão abaixo para permitir o acesso à sua localização.
+        </div>
+        
+        <div id="locationAlert" class="alert" style="display: none;">
+            <strong>Importante:</strong> Mantenha o app aberto para registrar sua presença. Abra ao chegar e ao sair do trabalho.
+        </div>
+        
+        <button id="requestPermission" class="btn btn-primary" style="display: none;">
+            Permitir Acesso à Localização
+        </button>
+        
+        <div class="status-card">
+            <div class="status-indicator" id="statusIcon">⚪</div>
+            <div class="status-text" id="statusText">Verificando localização...</div>
+            <div class="status-detail" id="statusDetail">Aguarde</div>
+            <div class="timer-display" id="timer">00:00:00</div>
+        </div>
+        
+        <div class="summary-card">
+            <div class="summary-title">Total de Horas Extras Acumuladas</div>
+            <div class="summary-value" id="totalOvertime">00:00</div>
+        </div>
+        
+        <button id="manualCheckIn" class="btn btn-secondary">
+            Registrar Entrada Manual
+        </button>
+        
+        <button id="manualCheckOut" class="btn btn-secondary">
+            Registrar Saída Manual
+        </button>
+        
+        <h2 class="section-title">Histórico de Registros</h2>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Total</th>
+                        <th>Extras</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsTable">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #a1a1aa;">
+                            Nenhum registro ainda
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // Inicializa os ícones Lucide
-    lucide.createIcons();
-
-    const allowedLatitude = -15.7895;
-    const allowedLongitude = -47.9257;
-    const allowedRadius = 0.2; // em km
-    const statusDiv = document.getElementById("status");
-
-    if (!navigator.geolocation) {
-      statusDiv.innerHTML = `<i data-lucide="x-circle"></i> Seu navegador não suporta geolocalização`;
-      statusDiv.className = "status gray";
-      lucide.createIcons();
-    } else {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const distance = getDistance(latitude, longitude, allowedLatitude, allowedLongitude);
-
-          if (distance <= allowedRadius) {
-            statusDiv.innerHTML = `<i data-lucide="check-circle"></i> Você está no local permitido ✅`;
-            statusDiv.className = "status green";
-          } else {
-            statusDiv.innerHTML = `<i data-lucide="x-circle"></i> Você não está no local ❌`;
-            statusDiv.className = "status red";
-          }
-          lucide.createIcons();
-        },
-        (error) => {
-          statusDiv.innerHTML = `<i data-lucide="x-circle"></i> Erro ao obter localização`;
-          statusDiv.className = "status red";
-          lucide.createIcons();
-          console.error(error);
+    <script>
+        // Configurações
+        const WORK_LOCATION = {
+            lat: -15.7942,
+            lng: -47.8822,
+            radius: 300 // metros (área de detecção mais ampla)
+        };
+        
+        const WORK_HOURS_PER_DAY = 8 * 60; // 8 horas em minutos
+        const MAX_OVERTIME_PER_DAY = 60; // 1 hora em minutos
+        
+        // Estado da aplicação
+        let currentSession = null;
+        let watchId = null;
+        let timerInterval = null;
+        let records = [];
+        let isAtWork = false;
+        
+        // Elementos DOM
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+        const statusDetail = document.getElementById('statusDetail');
+        const timer = document.getElementById('timer');
+        const totalOvertime = document.getElementById('totalOvertime');
+        const recordsTable = document.getElementById('recordsTable');
+        const permissionAlert = document.getElementById('permissionAlert');
+        const locationAlert = document.getElementById('locationAlert');
+        const requestPermission = document.getElementById('requestPermission');
+        const manualCheckIn = document.getElementById('manualCheckIn');
+        const manualCheckOut = document.getElementById('manualCheckOut');
+        
+        // Funções de armazenamento (simulado para ambiente Claude.ai)
+        const storage = {
+            data: {
+                records: [],
+                currentSession: null
+            },
+            
+            getRecords() {
+                try {
+                    const data = localStorage.getItem('overtimeRecords');
+                    return data ? JSON.parse(data) : [];
+                } catch (e) {
+                    return this.data.records;
+                }
+            },
+            
+            saveRecords(records) {
+                try {
+                    localStorage.setItem('overtimeRecords', JSON.stringify(records));
+                } catch (e) {
+                    this.data.records = records;
+                }
+            },
+            
+            getCurrentSession() {
+                try {
+                    const data = localStorage.getItem('currentSession');
+                    return data ? JSON.parse(data) : null;
+                } catch (e) {
+                    return this.data.currentSession;
+                }
+            },
+            
+            saveCurrentSession(session) {
+                try {
+                    localStorage.setItem('currentSession', JSON.stringify(session));
+                } catch (e) {
+                    this.data.currentSession = session;
+                }
+            },
+            
+            clearCurrentSession() {
+                try {
+                    localStorage.removeItem('currentSession');
+                } catch (e) {
+                    this.data.currentSession = null;
+                }
+            }
+        };
+        
+        // Calcular distância entre dois pontos (fórmula de Haversine)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; // Raio da Terra em metros
+            const φ1 = lat1 * Math.PI / 180;
+            const φ2 = lat2 * Math.PI / 180;
+            const Δφ = (lat2 - lat1) * Math.PI / 180;
+            const Δλ = (lon2 - lon1) * Math.PI / 180;
+            
+            const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ/2) * Math.sin(Δλ/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            
+            return R * c;
         }
-      );
-    }
-
-    function getDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = deg2rad(lat2 - lat1);
-      const dLon = deg2rad(lon2 - lon1);
-      const a =
-        Math.sin(dLat / 2) ** 2 +
-        Math.cos(deg2rad(lat1)) *
-          Math.cos(deg2rad(lat2)) *
-          Math.sin(dLon / 2) ** 2;
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
-    }
-
-    function deg2rad(deg) {
-      return deg * (Math.PI / 180);
-    }
-  </script>
+        
+        // Verificar se está no local de trabalho
+        function isAtWorkLocation(lat, lng) {
+            const distance = calculateDistance(
+                lat, lng,
+                WORK_LOCATION.lat, WORK_LOCATION.lng
+            );
+            return distance <= WORK_LOCATION.radius;
+        }
+        
+        // Formatar tempo em HH:MM:SS
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+        
+        // Formatar tempo em HH:MM
+        function formatTimeShort(minutes) {
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        }
+        
+        // Atualizar timer
+        function updateTimer() {
+            if (!currentSession) {
+                timer.textContent = '00:00:00';
+                return;
+            }
+            
+            const elapsed = Math.floor((Date.now() - currentSession.startTime) / 1000);
+            timer.textContent = formatTime(elapsed);
+        }
+        
+        // Atualizar status
+        function updateStatus(atWork) {
+            isAtWork = atWork;
+            
+            if (atWork) {
+                statusIcon.textContent = '🟢';
+                statusText.textContent = 'Você está no trabalho';
+                statusDetail.textContent = 'Registrando presença';
+            } else {
+                statusIcon.textContent = '🔴';
+                statusText.textContent = 'Você está fora do trabalho';
+                statusDetail.textContent = 'Aguardando entrada';
+            }
+        }
+        
+        // Iniciar sessão
+        function startSession() {
+            if (currentSession) return;
+            
+            currentSession = {
+                startTime: Date.now(),
+                date: new Date().toLocaleDateString('pt-BR')
+            };
+            
+            storage.saveCurrentSession(currentSession);
+            
+            timerInterval = setInterval(updateTimer, 1000);
+            updateTimer();
+            
+            console.log('Sessão iniciada:', currentSession);
+        }
+        
+        // Finalizar sessão
+        function endSession() {
+            if (!currentSession) return;
+            
+            const endTime = Date.now();
+            const totalMinutes = Math.floor((endTime - currentSession.startTime) / 1000 / 60);
+            const overtime = Math.min(Math.max(0, totalMinutes - WORK_HOURS_PER_DAY), MAX_OVERTIME_PER_DAY);
+            
+            const record = {
+                date: currentSession.date,
+                checkIn: new Date(currentSession.startTime).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                checkOut: new Date(endTime).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}),
+                totalMinutes: totalMinutes,
+                overtime: overtime
+            };
+            
+            records.push(record);
+            storage.saveRecords(records);
+            storage.clearCurrentSession();
+            
+            currentSession = null;
+            clearInterval(timerInterval);
+            updateTimer();
+            updateRecordsTable();
+            updateTotalOvertime();
+            
+            console.log('Sessão finalizada:', record);
+        }
+        
+        // Atualizar tabela de registros
+        function updateRecordsTable() {
+            if (records.length === 0) {
+                recordsTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #a1a1aa;">
+                            Nenhum registro ainda
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            recordsTable.innerHTML = records.map(record => `
+                <tr>
+                    <td>${record.date}</td>
+                    <td>${record.checkIn}</td>
+                    <td>${record.checkOut}</td>
+                    <td>${formatTimeShort(record.totalMinutes)}</td>
+                    <td><strong>${formatTimeShort(record.overtime)}</strong></td>
+                </tr>
+            `).reverse().join('');
+        }
+        
+        // Atualizar total de horas extras
+        function updateTotalOvertime() {
+            const total = records.reduce((sum, record) => sum + record.overtime, 0);
+            totalOvertime.textContent = formatTimeShort(total);
+        }
+        
+        // Callback de sucesso da geolocalização
+        function onLocationSuccess(position) {
+            const { latitude, longitude } = position.coords;
+            const atWork = isAtWorkLocation(latitude, longitude);
+            
+            console.log('Localização:', latitude, longitude, 'No trabalho:', atWork);
+            
+            updateStatus(atWork);
+            
+            if (atWork && !currentSession) {
+                startSession();
+            } else if (!atWork && currentSession) {
+                endSession();
+            }
+            
+            locationAlert.style.display = 'block';
+        }
+        
+        // Callback de erro da geolocalização
+        function onLocationError(error) {
+            console.error('Erro de geolocalização:', error);
+            statusIcon.textContent = '⚠️';
+            statusText.textContent = 'Erro ao acessar localização';
+            statusDetail.textContent = error.message;
+            permissionAlert.style.display = 'block';
+        }
+        
+        // Solicitar permissão e iniciar monitoramento
+        function startLocationTracking() {
+            if (!navigator.geolocation) {
+                alert('Geolocalização não suportada neste navegador');
+                return;
+            }
+            
+            permissionAlert.style.display = 'none';
+            requestPermission.style.display = 'none';
+            
+            watchId = navigator.geolocation.watchPosition(
+                onLocationSuccess,
+                onLocationError,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 30000
+                }
+            );
+        }
+        
+        // Event listeners
+        requestPermission.addEventListener('click', startLocationTracking);
+        
+        manualCheckIn.addEventListener('click', () => {
+            if (!currentSession) {
+                startSession();
+                updateStatus(true);
+                alert('Entrada registrada manualmente');
+            }
+        });
+        
+        manualCheckOut.addEventListener('click', () => {
+            if (currentSession) {
+                endSession();
+                updateStatus(false);
+                alert('Saída registrada manualmente');
+            }
+        });
+        
+        // Inicialização
+        function init() {
+            // Carregar dados salvos
+            records = storage.getRecords();
+            currentSession = storage.getCurrentSession();
+            
+            updateRecordsTable();
+            updateTotalOvertime();
+            
+            // Se há sessão ativa, retomar
+            if (currentSession) {
+                timerInterval = setInterval(updateTimer, 1000);
+                updateTimer();
+                updateStatus(true);
+            }
+            
+            // Verificar permissão de localização
+            if (navigator.permissions) {
+                navigator.permissions.query({ name: 'geolocation' }).then(result => {
+                    if (result.state === 'granted') {
+                        startLocationTracking();
+                    } else if (result.state === 'prompt') {
+                        permissionAlert.style.display = 'block';
+                        requestPermission.style.display = 'block';
+                    } else {
+                        permissionAlert.style.display = 'block';
+                    }
+                });
+            } else {
+                requestPermission.style.display = 'block';
+                permissionAlert.style.display = 'block';
+            }
+        }
+        
+        // Service Worker (básico para PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    self.addEventListener('install', (e) => {
+                        console.log('Service Worker instalado');
+                        self.skipWaiting();
+                    });
+                    
+                    self.addEventListener('activate', (e) => {
+                        console.log('Service Worker ativado');
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(reg => console.log('Service Worker registrado'))
+                    .catch(err => console.log('Erro ao registrar SW:', err));
+            });
+        }
+        
+        // Iniciar app
+        init();
+        
+        // Salvar estado antes de fechar
+        window.addEventListener('beforeunload', () => {
+            if (currentSession) {
+                storage.saveCurrentSession(currentSession);
+            }
+        });
+    </script>
 </body>
 </html>
